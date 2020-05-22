@@ -19,8 +19,8 @@ commander
 		const bar = new Progress("running [:bar] :percent :etas", {
 			complete: "=",
 			incomplete: " ",
-			width: 20,
-			total: 10
+			width: 22,
+			total: 11
 		});
 		const path = commander.path ? commander.path : ".";
 		mkdirp.sync(`${path}/${number}`);
@@ -41,8 +41,17 @@ commander
 				clip: { x: 0, y: 308, height: height - 160, width: 800 }
 			});
 			bar.tick();
-			bar.tick();
 			fs.copyFileSync("./bin/main.cpp", `${path}/${number}/main.cpp`);
+			bar.tick();
+			const in_data = await page.$eval("#sample-input-1", element => {
+				return element.textContent;
+			});
+			const out_data = await page.$eval("#sample-output-1", element => {
+				return element.textContent;
+			});
+			bar.tick();
+			fs.writeFileSync(`${path}/${number}/in.txt`, in_data);
+			fs.writeFileSync(`${path}/${number}/out.txt`, out_data);
 			bar.tick();
 			const response: Promise<any> = await open(
 				`https://www.acmicpc.net/submit/${number}`,

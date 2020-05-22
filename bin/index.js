@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 "use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -35,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-Object.defineProperty(exports, "__esModule", { value: true });
+exports.__esModule = true;
 var commander = require("commander");
 var open = require("open");
 var chalk = require("chalk");
@@ -49,22 +50,22 @@ commander
     .option("-p, --path <path>", "원하는 path를 설정해주세요. 안넣는다면 현재 디렉토리에 생성됩니다.")
     .action(function (number) {
     return __awaiter(this, void 0, void 0, function () {
-        var bar, path, browser, page, sizeElement, height, response, err_1;
+        var bar, path, browser, page, sizeElement, height, in_data, out_data, response, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     bar = new Progress("running [:bar] :percent :etas", {
                         complete: "=",
                         incomplete: " ",
-                        width: 20,
-                        total: 10
+                        width: 22,
+                        total: 11
                     });
                     path = commander.path ? commander.path : ".";
                     mkdirp.sync(path + "/" + number);
                     bar.tick();
                     _a.label = 1;
                 case 1:
-                    _a.trys.push([1, 9, , 10]);
+                    _a.trys.push([1, 11, , 12]);
                     return [4 /*yield*/, puppeteer.launch()];
                 case 2:
                     browser = _a.sent();
@@ -92,29 +93,41 @@ commander
                 case 7:
                     _a.sent();
                     bar.tick();
-                    bar.tick();
                     fs.copyFileSync("./bin/main.cpp", path + "/" + number + "/main.cpp");
                     bar.tick();
-                    return [4 /*yield*/, open("https://www.acmicpc.net/submit/" + number, { wait: false })];
+                    return [4 /*yield*/, page.$eval("#sample-input-1", function (element) {
+                            return element.textContent;
+                        })];
                 case 8:
+                    in_data = _a.sent();
+                    return [4 /*yield*/, page.$eval("#sample-output-1", function (element) {
+                            return element.textContent;
+                        })];
+                case 9:
+                    out_data = _a.sent();
+                    bar.tick();
+                    fs.writeFileSync(path + "/" + number + "/in.txt", in_data);
+                    fs.writeFileSync(path + "/" + number + "/out.txt", out_data);
+                    bar.tick();
+                    return [4 /*yield*/, open("https://www.acmicpc.net/submit/" + number, { wait: false })];
+                case 10:
                     response = _a.sent();
                     if (response instanceof Error) {
-                        console.log(chalk.default.red(response.message));
+                        console.log(chalk["default"].red(response.message));
                     }
                     else {
                         bar.tick();
-                        console.log(chalk.default.yellow("Complete Hack Your Code! on " + number));
+                        console.log(chalk["default"].yellow("Complete Hack Your Code! on " + number));
                         process.exit(1);
                     }
-                    return [3 /*break*/, 10];
-                case 9:
+                    return [3 /*break*/, 12];
+                case 11:
                     err_1 = _a.sent();
-                    console.log(chalk.default.red(err_1));
-                    return [3 /*break*/, 10];
-                case 10: return [2 /*return*/];
+                    console.log(chalk["default"].red(err_1));
+                    return [3 /*break*/, 12];
+                case 12: return [2 /*return*/];
             }
         });
     });
 })
     .parse(process.argv);
-//# sourceMappingURL=index.js.map
